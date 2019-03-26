@@ -27,7 +27,7 @@ public class TrioFacadeImpl implements TrioFacade {
 	public Response<String> createGame() {
 		GameImpl game = new GameImpl();
 		game.setId(generateId(10, newId -> (gameRepo.getById(newId) == null)));
-		game.setField(FieldManipulator.createField(3));
+		game.setField(FieldManipulator.createField(8, 8));
 		game.setLastStepResult(new StepResult(List.of(), 0));
 		game = gameRepo.save(game);
 		return new Response<>(game.getId());
@@ -115,7 +115,7 @@ public class TrioFacadeImpl implements TrioFacade {
 			game.setField(stepResult.getStates().get(stepResult.getStates().size() - 1));
 			game.setLastStepResult(stepResult);
 			game.setStepNumber(game.getStepNumber() + 1);
-			if (gamer.getScore() >= 100) {
+			if (gamer.getScore() >= 300) {
 				game.setStatus(2);
 				game.setWinnerGamerName(gamer.getName());
 				game.setCurrentGamerName(null);

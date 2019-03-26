@@ -14,29 +14,45 @@ public final class FieldManipulator {
 	
 	public static StepResult move(Field field, Coordinates source, Coordinates dest) {
 		final List<Field>  states = new ArrayList<>();
-		int                score  = 0;
 		final CellType[][] cells  = field.copyCells();
+		int                score  = 0;
 		
-		CellType temp = cells[dest.getX()][dest.getY()];
-		cells[dest.getX()][dest.getY()] = cells[source.getX()][source.getY()];
-		cells[source.getX()][source.getY()] = temp;
+		if (Math.abs(source.getX() - dest.getX()) + Math.abs(source.getY() - dest.getY()) != 1) {
+			return new StepResult(states, score);
+		}
+		
+		swap(source, dest, cells);
 		
 		Field newField = new FieldImpl(cells);
+		states.add(newField);
+		
 		while (true) {
-			final Set<Coordinates> cellsForDelete = getAllCellsForDelete(field);
+			final Set<Coordinates> cellsForDelete = getAllCellsForDelete(newField);
 			if (cellsForDelete.isEmpty()) {
+				List<PossibleStep> possibleSteps = getPossibleSteps(newField);
+				if (possibleSteps.isEmpty()) {
+					states.add(createField(newField.getWidth(), newField.getHeight()));
+				}
 				break;
 			} else {
 				for (Coordinates c : cellsForDelete) {
 					score += newField.get(c.getX(), c.getY()).getCost();
 				}
 				newField = deleteCells(newField, cellsForDelete);
+				states.add(newField);
 				newField = vacuumAndFillField(newField);
 				states.add(newField);
 			}
 		}
 		
+		if (score == 0) states.clear();
 		return new StepResult(states, score);
+	}
+	
+	public static void swap(Coordinates source, Coordinates dest, CellType[][] cells) {
+		CellType temp = cells[dest.getY()][dest.getX()];
+		cells[dest.getY()][dest.getX()] = cells[source.getY()][source.getX()];
+		cells[source.getY()][source.getX()] = temp;
 	}
 	
 	public static Set<Coordinates> getAllCellsForDelete(Field field) {
@@ -60,21 +76,21 @@ public final class FieldManipulator {
 	
 	public static Field vacuumAndFillField(Field field) {
 		CellType[][] cells = field.copyCells();
-		for (int i = 0; i < field.getHeight(); i++) {
-			for (int j = field.getWidth() - 1; j >= 0; j--) {
-				if (cells[i][j] == null) {
-					for (int k = j - 1; k >= 0; k--) {
-						if (cells[i][k] != null) {
-							cells[i][j] = cells[i][k];
-							cells[i][k] = null;
+		for (int x = 0; x < field.getWidth(); x++) {
+			for (int y = field.getHeight() - 1; y >= 0; y--) {
+				if (cells[y][x] == null) {
+					for (int k = y - 1; k >= 0; k--) {
+						if (cells[k][x] != null) {
+							cells[y][x] = cells[k][x];
+							cells[k][x] = null;
 							break;
 						}
 					}
 				}
 			}
-			for (int j = 0; j < field.getWidth(); j++) {
-				if (cells[i][j] == null) {
-					cells[i][j] = getRandomCellValue();
+			for (int y = 0; y < field.getHeight(); y++) {
+				if (cells[y][x] == null) {
+					cells[y][x] = getRandomCellValue();
 				} else {
 					break;
 				}
@@ -123,15 +139,10 @@ public final class FieldManipulator {
 		return coordinates;
 	}
 	
-	public static CellType getRandomCellValue() {
-		CellType[] values = CellType.values();
-		return values[rnd.nextInt(values.length)];
-	}
-	
-	public static Field createField(int size) {
-		CellType[][] cells = new CellType[size][size];
-		for (int i = 0; i < cells.length; i++) {
-			for (int j = 0; j < cells.length; j++) {
+	public static Field createField(int width, int height) {
+		CellType[][] cells = new CellType[height][width];
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
 				cells[i][j] = getRandomCellValue();
 			}
 		}
@@ -148,5 +159,44 @@ public final class FieldManipulator {
 		}
 		
 		return field;
+	}
+	
+	public static List<PossibleStep> getPossibleSteps(Field field) {
+		List<PossibleStep> steps = new ArrayList<>();
+		CellType[][]       cells = field.copyCells();
+		
+		for (int x = 0; x < field.getWidth(); x++) {
+			for (int y = 0; y < field.getHeight(); y++) {
+				Coordinates       source = new Coordinates(x, y);
+				List<Coordinates> dests  = new ArrayList<>();
+				if (x < field.getWidth() - 1) {
+					dests.add(new Coordinates(x + 1, y));
+				}
+				if (y < field.getHeight() - 1) {
+					dests.add(new Coordinates(x, y + 1));
+				}
+				
+				for (Coordinates dest : dests) {
+					swap(source, dest, cells);
+					Set<Coordinates> allCellsForDelete = getAllCellsForDelete(new FieldImpl(cells));
+					if (!allCellsForDelete.isEmpty()) {
+						steps.add(new PossibleStep(source,
+						                           dest,
+						                           allCellsForDelete.parallelStream()
+						                                            .mapToInt(c -> cells[c.getY()][c.getX()].getCost())
+						                                            .sum()));
+					}
+					swap(dest, source, cells);
+				}
+			}
+		}
+		
+		steps.sort(Comparator.comparingInt(PossibleStep::getScore));
+		return steps;
+	}
+	
+	public static CellType getRandomCellValue() {
+		CellType[] values = CellType.values();
+		return values[rnd.nextInt(values.length)];
 	}
 }
