@@ -74,22 +74,13 @@ public class TrioFacadeImpl implements TrioFacade {
 			return Response.createError("У вас нет прав для выполнения данного действия.");
 		}
 		
-		GameImpl game = gameRepo.getById(gameId);
-		if (game.getStatus() != 1) {
-			return Response.createError("Игра с ID = "
-			                            + gameId
-			                            + " не запущена. Её статус = "
-			                            + game.getStatus()
-			                            + ".");
-		}
-		
-		GamerImpl gamer            = gamerRepo.getById(gamerId);
-		boolean   can;
-		String    currentGamerName = game.getCurrentGamerName();
+		String  gamerName        = gamerRepo.getById(gamerId).getName();
+		String  currentGamerName = gameRepo.getById(gameId).getCurrentGamerName();
+		boolean can;
 		if (currentGamerName == null || currentGamerName.isEmpty()) {
 			can = false;
 		} else {
-			can = game.getCurrentGamerName().equals(gamer.getName());
+			can = currentGamerName.equals(gamerName);
 		}
 		return new Response<>(can);
 	}
