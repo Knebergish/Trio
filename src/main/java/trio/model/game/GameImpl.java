@@ -100,6 +100,7 @@ public class GameImpl implements Game, IEntity<String>, Serializable {
 	}
 	
 	public boolean containGamer(String gamerId) {
+		if (gamers.isEmpty()) return false;
 		return gamers.stream().map(IEntity::getId).anyMatch(s -> s.equals(gamerId));
 	}
 	
@@ -164,6 +165,18 @@ public class GameImpl implements Game, IEntity<String>, Serializable {
 		this.lastStepResult = serialize(StepResult.class, lastStepResult);
 	}
 	
+	private <T> String serialize(Class<T> c, T value) {
+		ObjectMapper mapper = ObjectMapperFactory.createMapper();
+		String       s;
+		try {
+			s = mapper.writerFor(c).writeValueAsString(value);
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+			s = "";
+		}
+		return s;
+	}
+	
 	public void setStepNumber(int stepNumber) {
 		this.stepNumber = stepNumber;
 	}
@@ -186,17 +199,5 @@ public class GameImpl implements Game, IEntity<String>, Serializable {
 	
 	public void setField(Field field) {
 		this.field = serialize(FieldImpl.class, new FieldImpl(field.copyCells()));
-	}
-	
-	private <T> String serialize(Class<T> c, T value) {
-		ObjectMapper mapper = ObjectMapperFactory.createMapper();
-		String       s;
-		try {
-			s = mapper.writerFor(c).writeValueAsString(value);
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-			s = "";
-		}
-		return s;
 	}
 }
