@@ -4,29 +4,22 @@ package trio.servlets;
 import trio.core.ObjectMapperFactory;
 import trio.core.Response;
 import trio.core.TrioFacade;
-import trio.core.TrioFacadeImpl;
 
+import javax.ejb.EJB;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.MalformedURLException;
-import java.rmi.Naming;
-import java.rmi.RemoteException;
 import java.util.Map;
 
 
+@SuppressWarnings("WeakerAccess")
 public abstract class AbstractServlet<T> extends HttpServlet {
-	private static final TrioFacade trioFacade;
+	@EJB
+	private TrioFacade trioFacade;
 	
-	static {
-		trioFacade = new TrioFacadeImpl();
-		try {
-			Naming.rebind("rmi://localhost:31014/TrioFacade", trioFacade);
-		} catch (RemoteException | MalformedURLException e) {
-			e.printStackTrace();
-		}
+	protected AbstractServlet() {
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
