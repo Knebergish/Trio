@@ -15,7 +15,7 @@ import java.util.List;
 
 @SuppressWarnings("WeakerAccess")
 public abstract class AbstractRepo<I extends Serializable, T extends IEntity<I>> implements Repo<I, T> {
-	protected final EntityManager   entityManager   = HibernateUtil.getSessionFactory().createEntityManager();
+	protected static final EntityManager   entityManager   = HibernateUtil.getSessionFactory().createEntityManager();
 	protected final CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 	
 	@Override

@@ -100,7 +100,7 @@ public class GameImpl implements Game, IEntity<String>, Serializable {
 	}
 	
 	public boolean containGamer(String gamerId) {
-		if (gamers.isEmpty()) return false;
+		if (gamers == null || gamers.isEmpty()) return false;
 		return gamers.stream().map(IEntity::getId).anyMatch(s -> s.equals(gamerId));
 	}
 	
