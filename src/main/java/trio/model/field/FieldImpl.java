@@ -29,7 +29,7 @@ public class FieldImpl implements Field, Serializable {
 	@Override
 	@JsonIgnore
 	public CellType get(int x, int y) {
-		return cells[x][y];
+		return cells[y][x];
 	}
 	
 	@Override
