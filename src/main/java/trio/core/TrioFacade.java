@@ -52,7 +52,7 @@ public interface TrioFacade extends Remote {
 	/**
 	 * @param gameId  идентификатор игры.
 	 * @param gamerId идентификатор игрока.
-	 * @return ошиба или текущее состояние игры.
+	 * @return ошибка или текущее состояние игры.
 	 */
 	Response<Game> getGameState(String gameId, String gamerId) throws RemoteException;
 }
