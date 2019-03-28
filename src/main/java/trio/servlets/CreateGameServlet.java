@@ -13,8 +13,8 @@ public class CreateGameServlet extends AbstractServlet<String> {
 	@Override
 	protected Response<String> handleRequest(TrioFacade trioFacade, Map<String, String[]> params)
 	throws Exception {
-		return trioFacade.createGame(parseInt(params.get("width")[0]),
-		                             parseInt(params.get("height")[0]));
+		return trioFacade.createGame(parseInt(getParam(params, "width")),
+		                             parseInt(getParam(params, "height")));
 	}
 	
 	private int parseInt(String text) {

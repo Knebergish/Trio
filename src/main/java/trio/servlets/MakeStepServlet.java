@@ -11,15 +11,16 @@ import javax.servlet.annotation.WebServlet;
 import java.io.IOException;
 import java.util.Map;
 
+
 @WebServlet("/makeStep")
 public class MakeStepServlet extends AbstractServlet<StepResult> {
 	@Override
 	protected Response<StepResult> handleRequest(TrioFacade trioFacade, Map<String, String[]> params)
-	throws IOException {
-		return trioFacade.makeStep(params.get("gameId")[0],
-		                           params.get("gamerId")[0],
-		                           deserializeCoordinates(params.get("source")[0]),
-		                           deserializeCoordinates(params.get("dest")[0]));
+	throws Exception {
+		return trioFacade.makeStep(getParam(params, "gameId"),
+		                           getParam(params, "gamerId"),
+		                           deserializeCoordinates(getParam(params, "source")),
+		                           deserializeCoordinates(getParam(params, "dest")));
 	}
 	
 	private Coordinates deserializeCoordinates(String value) throws IOException {

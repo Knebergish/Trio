@@ -42,6 +42,9 @@ public abstract class AbstractServlet<T> extends HttpServlet {
 		writer.close();
 	}
 	
+	protected abstract Response<T> handleRequest(TrioFacade trioFacade, Map<String, String[]> params)
+	throws Exception;
+	
 	private String serializeResponse(Response response) {
 		String s;
 		try {
@@ -52,6 +55,12 @@ public abstract class AbstractServlet<T> extends HttpServlet {
 		return s;
 	}
 	
-	protected abstract Response<T> handleRequest(TrioFacade trioFacade, Map<String, String[]> params)
-	throws Exception;
+	protected String getParam(Map<String, String[]> params, String name) throws Exception {
+		try {
+			return params.get(name)[0];
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+			throw new Exception("Отсутствует необходимый параметр " + name);
+		}
+	}
 }
