@@ -15,16 +15,16 @@ import java.util.List;
 
 @SuppressWarnings("WeakerAccess")
 public abstract class AbstractRepo<I extends Serializable, T extends IEntity<I>> implements Repo<I, T> {
-	protected final EntityManager   entityManager   = HibernateUtil.getSessionFactory().createEntityManager();
+	protected static final EntityManager   entityManager   = HibernateUtil.getSessionFactory().createEntityManager();
 	protected final CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 	
 	@Override
-	public synchronized T getById(I id) {
+	public T getById(I id) {
 		return entityManager.find(getEntityClass(), id);
 	}
 	
 	@Override
-	public synchronized void remove(T item) {
+	public void remove(T item) {
 		EntityTransaction transaction = entityManager.getTransaction();
 		transaction.begin();
 		entityManager.remove(item);
@@ -33,7 +33,7 @@ public abstract class AbstractRepo<I extends Serializable, T extends IEntity<I>>
 	}
 	
 	@Override
-	public synchronized T save(T item) {
+	public T save(T item) {
 		EntityTransaction transaction = entityManager.getTransaction();
 		transaction.begin();
 		entityManager.persist(item);
@@ -43,7 +43,7 @@ public abstract class AbstractRepo<I extends Serializable, T extends IEntity<I>>
 	}
 	
 	@Override
-	public synchronized List<T> getAll() {
+	public List<T> getAll() {
 		CriteriaQuery<T> cq        = criteriaBuilder.createQuery(getEntityClass());
 		Root<T>          rootEntry = cq.from(getEntityClass());
 		CriteriaQuery<T> all       = cq.select(rootEntry);
