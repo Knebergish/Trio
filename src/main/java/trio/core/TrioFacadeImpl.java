@@ -20,14 +20,27 @@ import java.util.function.Predicate;
 @Remote(TrioFacade.class)
 @Stateless(name = "TrioFacadeImpl")
 public class TrioFacadeImpl implements TrioFacade {
+	private static final int MAX_SIZE = 20;
+	
 	private final GameRepo  gameRepo  = new GameRepo();
 	private final GamerRepo gamerRepo = new GamerRepo();
 	
 	@Override
-	public Response<String> createGame() {
+	public Response<String> createGame(int width, int height) {
+		if (width < 3 || height < 3) {
+			return Response.createError("Размерности создаваемого поля должны быть не меньше 3.");
+		}
+		if (width > MAX_SIZE || height > MAX_SIZE) {
+			return Response.createError("Слишком большое поле. Разрешено максимум "
+			                            + MAX_SIZE
+			                            + "x"
+			                            + MAX_SIZE
+			                            + " клеток.");
+		}
+		
 		GameImpl game = new GameImpl();
 		game.setId(generateId(10, newId -> (gameRepo.getById(newId) == null)));
-		game.setField(FieldManipulator.createField(8, 8));
+		game.setField(FieldManipulator.createField(width, height));
 		game.setLastStepResult(new StepResult(List.of(), 0));
 		game = gameRepo.save(game);
 		return new Response<>(game.getId());
