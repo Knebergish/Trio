@@ -7,15 +7,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Map;
 
 
 public class FieldImpl implements Field, Serializable {
 	@JsonProperty("cells")
 	private final CellType[][] cells;
 	
+	@JsonProperty("costs")
+	private final Map<CellType, Integer> costs;
+	
 	@JsonCreator
-	public FieldImpl(@JsonProperty("cells") CellType[][] cells) {
+	public FieldImpl(@JsonProperty("cells") CellType[][] cells,
+	                 @JsonProperty("costs") Map<CellType, Integer> costs) {
 		this.cells = cells;
+		this.costs = costs;
 	}
 	
 	public CellType[][] copyCells() {
@@ -42,5 +48,10 @@ public class FieldImpl implements Field, Serializable {
 	@JsonIgnore
 	public int getHeight() {
 		return cells.length;
+	}
+	
+	@Override
+	public Map<CellType, Integer> getCosts() {
+		return costs;
 	}
 }

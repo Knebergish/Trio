@@ -1,7 +1,7 @@
 package trio.core;
 
 
-import trio.model.IdGenerator;
+import trio.model.RandomGenerator;
 import trio.model.field.Coordinates;
 import trio.model.field.StepResult;
 import trio.model.game.Game;
@@ -40,7 +40,7 @@ public class TrioFacadeImpl implements TrioFacade {
 		
 		GameImpl game = new GameImpl();
 		game.setId(generateId(10, newId -> (gameRepo.getById(newId) == null)));
-		game.setField(FieldManipulator.createField(width, height));
+		game.setField(FieldManipulator.createField(width, height, RandomGenerator.generateCosts()));
 		game.setLastStepResult(new StepResult(List.of(), 0));
 		game = gameRepo.save(game);
 		return new Response<>(game.getId());
@@ -163,7 +163,7 @@ public class TrioFacadeImpl implements TrioFacade {
 	private String generateId(int length, Predicate<String> validator) {
 		String generatedId;
 		do {
-			generatedId = IdGenerator.generate(length);
+			generatedId = RandomGenerator.generateId(length);
 		}
 		while (!validator.test(generatedId));
 		return generatedId;

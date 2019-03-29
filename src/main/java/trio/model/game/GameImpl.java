@@ -198,6 +198,6 @@ public class GameImpl implements Game, IEntity<String>, Serializable {
 	}
 	
 	public void setField(Field field) {
-		this.field = serialize(FieldImpl.class, new FieldImpl(field.copyCells()));
+		this.field = serialize(FieldImpl.class, new FieldImpl(field.copyCells(), field.getCosts()));
 	}
 }
