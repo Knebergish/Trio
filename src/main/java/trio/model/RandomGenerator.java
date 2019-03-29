@@ -26,7 +26,7 @@ public final class RandomGenerator {
 	
 	public static Map<CellType, Integer> generateCosts() {
 		CellType[] values = CellType.values();
-		List<Integer> costs = IntStream.range(0, values.length)
+		List<Integer> costs = IntStream.range(1, values.length + 1)
 		                               .boxed()
 		                               .collect(Collectors.toList());
 		Collections.shuffle(costs);
