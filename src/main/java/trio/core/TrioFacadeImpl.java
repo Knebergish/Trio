@@ -73,8 +73,8 @@ public class TrioFacadeImpl implements TrioFacade {
 		game = gameRepo.save(game);
 		
 		if (game.getGamers().size() == 2) {
-			game.setStatus(1);
 			game.setCurrentGamerName(game.getGamers().get(0).getName());
+			game.setStatus(1);
 			gameRepo.save(game);
 		}
 		

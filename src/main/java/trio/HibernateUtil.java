@@ -28,8 +28,18 @@ public final class HibernateUtil {
 			configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQL82Dialect");
 			configuration.setProperty("hibernate.show_sql", "true");
 			configuration.setProperty("hibernate.format_sql", "true");
-			configuration.setProperty("hibernate.connection.pool_size", "1");
+			configuration.setProperty("hibernate.connection.pool_size", "2");
 			configuration.setProperty("hibernate.current_session_context_class", "thread");
+			
+			configuration.setProperty("hibernate.c3p0.acquire_increment", "1");
+			configuration.setProperty("hibernate.c3p0.idle_test_period", "60");
+			configuration.setProperty("hibernate.c3p0.min_size", "1");
+			configuration.setProperty("hibernate.c3p0.max_size", "2");
+			configuration.setProperty("hibernate.c3p0.max_statements", "50");
+			configuration.setProperty("hibernate.c3p0.timeout", "0");
+			configuration.setProperty("hibernate.c3p0.acquireRetryAttempts", "1");
+			configuration.setProperty("hibernate.c3p0.acquireRetryDelay", "250");
+			configuration.setProperty("hibernate.c3p0.testConnectionOnCheckout", "true");
 			
 			configuration.addAnnotatedClass(GamerImpl.class);
 			configuration.addAnnotatedClass(GameImpl.class);
